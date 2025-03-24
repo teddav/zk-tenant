@@ -54,7 +54,7 @@ function parseSignature(signature: string) {
   return uint8ArrayToStringArray(sig);
 }
 
-export async function tdd(rawData: string) {
+export async function tddIdCircuitFormatter(rawData: string) {
   const parser = new TwoDDocParser();
   const result = await parser.parse(rawData);
 

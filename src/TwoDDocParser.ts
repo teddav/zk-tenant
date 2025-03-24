@@ -10,6 +10,24 @@ type Header = {
   countryId?: string;
 };
 
+function publicKeys(): Record<string, Uint8Array> {
+  const keys: Record<string, Uint8Array> = {};
+
+  keys[JSON.stringify(["FR04", "FPE7"])] = new Uint8Array([
+    4, 189, 70, 243, 118, 254, 254, 233, 71, 137, 37, 165, 101, 53, 183, 82, 204, 163, 226, 250, 78, 230, 233, 24, 252, 82, 33, 34, 21, 90,
+    23, 75, 1, 212, 69, 55, 134, 151, 248, 198, 82, 204, 70, 205, 15, 234, 207, 199, 36, 214, 24, 63, 179, 255, 31, 59, 50, 74, 6, 225, 148,
+    169, 207, 16, 124,
+  ]);
+  keys[JSON.stringify(["FR05", "0001"])] = new Uint8Array([
+    4, 86, 124, 231, 161, 237, 241, 19, 151, 249, 180, 23, 75, 231, 182, 210, 24, 149, 175, 22, 174, 33, 206, 199, 55, 32, 217, 16, 36, 44,
+    187, 134, 46, 18, 244, 129, 207, 135, 240, 110, 88, 51, 62, 197, 158, 146, 187, 108, 126, 124, 14, 99, 123, 64, 57, 25, 180, 8, 183, 66,
+    113, 16, 119, 203, 128,
+  ]);
+
+  return keys;
+}
+const PUBLIC_KEYS = publicKeys();
+
 /**
  * Parser for 2D-DOC documents
  * Handles parsing and verification of French 2D-DOC documents
@@ -67,7 +85,7 @@ export class TwoDDocParser {
       // Build the response object that matches the expected interface
       const result = {
         header,
-        fields: parsedFields || {}, // Ensure we always return an object
+        fields: parsedFields || [], // Ensure we always return an object
         signature: signatureData,
         signatureValid: false, // Will be updated after verification
         annex: annexData ? this.parseMessageZone(annexData, header) : undefined,
@@ -343,10 +361,10 @@ export class TwoDDocParser {
   }
 
   parseFields(message: any, header: Header) {
-    const parsedFields: Record<string, any> = {};
+    const parsedFields: any[] = [];
 
     if (!message || !Array.isArray(message)) {
-      return {};
+      return [];
     }
 
     for (const field of message) {
@@ -357,18 +375,20 @@ export class TwoDDocParser {
       if (fieldInfo) {
         const formattedValue = this.formatFieldValue(field.value, fieldInfo.type, header);
 
-        parsedFields[field.fieldId] = {
+        parsedFields.push({
+          id: field.fieldId,
           name: fieldInfo.name,
-          value: formattedValue,
+          value: field.value,
+          formattedValue,
           separator: field.separator,
-        };
+        });
       }
     }
 
     return parsedFields;
   }
 
-  getFieldInfo(fieldId: string, header: Header) {
+  getFieldInfo(fieldId: string) {
     return FIELD_DEFINITIONS[fieldId];
   }
 
@@ -420,7 +440,7 @@ export class TwoDDocParser {
     const baseDate = new Date("2000-01-01");
     const resultDate = new Date(baseDate);
     resultDate.setDate(baseDate.getDate() + days);
-    return resultDate.toISOString().split("T")[0];
+    return resultDate.toLocaleDateString("en-CA");
   }
 
   parseBinaryDate(bytes: any): string {
@@ -573,12 +593,7 @@ export async function verifySignature({
   certId: string;
 }) {
   try {
-    // FR05
-    const publicKeyBytes = new Uint8Array([
-      4, 86, 124, 231, 161, 237, 241, 19, 151, 249, 180, 23, 75, 231, 182, 210, 24, 149, 175, 22, 174, 33, 206, 199, 55, 32, 217, 16, 36,
-      44, 187, 134, 46, 18, 244, 129, 207, 135, 240, 110, 88, 51, 62, 197, 158, 146, 187, 108, 126, 124, 14, 99, 123, 64, 57, 25, 180, 8,
-      183, 66, 113, 16, 119, 203, 128,
-    ]);
+    const publicKeyBytes = PUBLIC_KEYS[JSON.stringify([caId, certId])];
     const signatureBytes = base32ToUint8Array(signature);
     const dataToVerify = header + message;
     const encoder = new TextEncoder();

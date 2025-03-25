@@ -2,12 +2,25 @@ import Proof from "./Proof";
 import Camera from "./Camera";
 import { useState, useEffect } from "react";
 
+type UserInfo = {
+  firstName: string;
+  lastName: string;
+  taxYear: string;
+  expectedRevenue: string;
+};
+
 export default function Home() {
   const [rawDataId, setRawDataId] = useState<string>("");
   const [rawDataTaxes, setRawDataTaxes] = useState<string>("");
   const [isScanning, setIsScanning] = useState(true);
   const [scanningType, setScanningType] = useState<"id" | "taxes" | null>(null);
   const [showCamera, setShowCamera] = useState(false);
+  const [userInfo, setUserInfo] = useState<UserInfo>({
+    firstName: "",
+    lastName: "",
+    taxYear: "",
+    expectedRevenue: "",
+  });
 
   useEffect(() => {
     // Small delay to ensure proper mounting
@@ -31,7 +44,12 @@ export default function Home() {
     setIsScanning(false);
   };
 
-  const canGenerateProof = rawDataId && rawDataTaxes;
+  const handleUserInfoChange = (field: keyof UserInfo, value: string) => {
+    setUserInfo((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const canGenerateProof =
+    rawDataId && rawDataTaxes && userInfo.firstName && userInfo.lastName && userInfo.taxYear && userInfo.expectedRevenue;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 pb-20 gap-8 sm:p-20 font-[family-name:var(--font-geist-sans)]">
@@ -39,6 +57,68 @@ export default function Home() {
 
       {isScanning ? (
         <div className="w-full max-w-2xl">
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold mb-4">Personal Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  id="firstName"
+                  value={userInfo.firstName}
+                  onChange={(e) => handleUserInfoChange("firstName", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  id="lastName"
+                  value={userInfo.lastName}
+                  onChange={(e) => handleUserInfoChange("lastName", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="taxYear" className="block text-sm font-medium text-gray-700 mb-1">
+                  Year of Tax Return
+                </label>
+                <input
+                  type="number"
+                  id="taxYear"
+                  value={userInfo.taxYear}
+                  onChange={(e) => handleUserInfoChange("taxYear", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                  min="2000"
+                  max="2024"
+                />
+              </div>
+              <div>
+                <label htmlFor="expectedRevenue" className="block text-sm font-medium text-gray-700 mb-1">
+                  Expected Tax Revenue
+                </label>
+                <input
+                  type="number"
+                  id="expectedRevenue"
+                  value={userInfo.expectedRevenue}
+                  onChange={(e) => handleUserInfoChange("expectedRevenue", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+            </div>
+          </div>
+
           <div className="mb-6">
             <h2 className="text-lg font-semibold mb-2">Required Documents:</h2>
             <div className="space-y-4">
@@ -84,13 +164,13 @@ export default function Home() {
                 canGenerateProof ? "bg-blue-500 hover:bg-blue-600" : "bg-gray-400 cursor-not-allowed"
               }`}
             >
-              {canGenerateProof ? "Generate Proof" : "Scan Both Documents First"}
+              {canGenerateProof ? "Generate Proof" : "Fill All Fields and Scan Documents"}
             </button>
           </div>
         </div>
       ) : (
         <div className="w-full max-w-2xl">
-          <Proof rawDataId={rawDataId} rawDataTaxes={rawDataTaxes} />
+          <Proof rawDataId={rawDataId} rawDataTaxes={rawDataTaxes} userInfo={userInfo} />
         </div>
       )}
     </div>

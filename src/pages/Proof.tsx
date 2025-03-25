@@ -4,6 +4,8 @@ import { UltraHonkBackend } from "@aztec/bb.js";
 import { CompiledCircuit, Noir } from "@noir-lang/noir_js";
 import { useState } from "react";
 
+import Verification from "./Verification";
+
 import { tddIdCircuitFormatter, fieldMatchersID, fieldMatchersTaxes } from "../tdd";
 import circuit from "../tdd_id.json";
 
@@ -44,8 +46,16 @@ export async function prove(rawData: RawData) {
   return proof;
 }
 
+// function sleep(ms: number) {
+//   return new Promise((resolve) => setTimeout(resolve, ms));
+// }
+// export async function prove(_rawData: RawData) {
+//   await sleep(10000);
+//   return "proof";
+// }
+
 export default function Proof(rawData: RawData) {
-  const [proof, setProof] = useState<any>(null);
+  const [proof, setProof] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
 
@@ -115,6 +125,7 @@ export default function Proof(rawData: RawData) {
           <div className="mt-6">
             <h3 className="text-lg font-medium mb-2">Generated Proof:</h3>
             <pre className="p-4 bg-gray-100 rounded-lg overflow-auto">{JSON.stringify(proof, null, 2)}</pre>
+            <Verification proof={proof} />
           </div>
         )}
       </div>

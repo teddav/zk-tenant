@@ -7,9 +7,16 @@ import { useState } from "react";
 import { tddIdCircuitFormatter, fieldMatchersID, fieldMatchersTaxes } from "../tdd";
 import circuit from "../tdd_id.json";
 
-export type RawData = {
+type RawData = {
   rawDataId: string;
   rawDataTaxes: string;
+};
+
+export type UserInfo = {
+  firstName: string;
+  lastName: string;
+  taxYear: string;
+  expectedRevenue: string;
 };
 
 export async function prove(rawData: RawData) {
@@ -40,14 +47,25 @@ export async function prove(rawData: RawData) {
 export default function Proof(rawData: RawData) {
   const [proof, setProof] = useState<any>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const handleProve = async () => {
     setIsGenerating(true);
+    setProgress(0);
+
+    // Simulate progress updates, "freezes" at 95%
+    const progressInterval = setInterval(() => {
+      setProgress((prev) => Math.min(prev + 1, 95));
+    }, 500);
+
     try {
       const result = await prove(rawData);
+      clearInterval(progressInterval);
+      setProgress(100);
       setProof(result);
     } catch (error) {
       console.error("Error generating proof:", error);
+      clearInterval(progressInterval);
     } finally {
       setIsGenerating(false);
     }
@@ -79,6 +97,19 @@ export default function Proof(rawData: RawData) {
         >
           {isGenerating ? "Generating Proof..." : "Generate Proof"}
         </button>
+
+        {isGenerating && (
+          <div className="mt-6">
+            <div className="flex items-center justify-center space-x-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              <div className="text-blue-500 font-medium">Generating proof... {progress}%</div>
+            </div>
+            <div className="mt-4 w-full bg-gray-200 rounded-full h-2.5">
+              <div className="bg-blue-500 h-2.5 rounded-full transition-all duration-500 ease-out" style={{ width: `${progress}%` }}></div>
+            </div>
+            <p className="mt-2 text-sm text-gray-500 text-center">This may take up to 30 seconds. Please do not close the window.</p>
+          </div>
+        )}
 
         {proof && (
           <div className="mt-6">

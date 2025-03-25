@@ -1,13 +1,6 @@
-import Proof from "./Proof";
+import Proof, { UserInfo } from "./Proof";
 import Camera from "./Camera";
 import { useState, useEffect } from "react";
-
-type UserInfo = {
-  firstName: string;
-  lastName: string;
-  taxYear: string;
-  expectedRevenue: string;
-};
 
 export default function Home() {
   const [rawDataId, setRawDataId] = useState<string>("");

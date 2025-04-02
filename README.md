@@ -7,14 +7,14 @@
 
 ## How it works
 
-The app allows you to share proof that you are French and that your income is higher than a certain amount without disclosing any other detail. For this, it uses your tax return document and your French ID, both of which being signed with 2D-Doc.
+The app allows you to share proof that you are French and that your income is higher than a certain amount without disclosing any other detail. For this, it uses your tax certificate and your French ID, both of which being signed with 2D-Doc.
 
 [2D-Doc](https://ants.gouv.fr/nos-missions/les-solutions-numeriques/2d-doc) is a structured digital signature standard widely used for secure document authentication.
 
 Components:
 
 - **[2D-Doc](https://ants.gouv.fr/nos-missions/les-solutions-numeriques/2d-doc)** barcode for documents, used with:
-    - Tax return document
+    - Tax certificate document
     - Post-2021 French ID card
 - **[tdd.nr](https://github.com/teddav/tdd.nr)** (based on [Noir](https://noir-lang.org/)): ensuring efficient and privacy-preserving computations.
 

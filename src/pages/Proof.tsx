@@ -6,8 +6,8 @@ import { useState } from "react";
 
 import Verification from "./Verification";
 
-import { tddIdCircuitFormatter, fieldMatchersID, fieldMatchersTaxes } from "../tdd";
-import circuit from "../tdd_id.json";
+import { buildCircuitData } from "../parseTdd";
+import circuit from "../circuit.json";
 
 type RawData = {
   rawDataId: string;
@@ -25,20 +25,10 @@ export async function prove(rawData: RawData) {
   const noir = new Noir(circuit as CompiledCircuit);
   const backend = new UltraHonkBackend(circuit.bytecode, { threads: navigator.hardwareConcurrency });
 
-  const formattedDataId = await tddIdCircuitFormatter(rawData.rawDataId);
-  const formattedDataTaxes = await tddIdCircuitFormatter(rawData.rawDataTaxes);
-  const idMatchers = fieldMatchersID(formattedDataId.parserResult);
-  const taxesMatchers = fieldMatchersTaxes(formattedDataTaxes.parserResult);
-  // Combine all documents into a single input
-  const combinedData = {
-    tdd_id: formattedDataId.circuitData,
-    tdd_taxes: formattedDataTaxes.circuitData,
-    ...idMatchers,
-    ...taxesMatchers,
-  };
+  const combinedData = await buildCircuitData(rawData.rawDataId, rawData.rawDataTaxes);
   console.log("combinedData", combinedData);
 
-  const { witness } = await noir.execute(combinedData);
+  const { witness } = await noir.execute(combinedData as any);
   console.time("Proof Generation");
   const proof = await backend.generateProof(witness);
   console.timeEnd("Proof Generation");

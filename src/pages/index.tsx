@@ -84,7 +84,7 @@ export default function Home() {
                 canGenerateProof ? "bg-blue-500 hover:bg-blue-600" : "bg-gray-400 cursor-not-allowed"
               }`}
             >
-              {canGenerateProof ? "Generate Proof" : "Fill All Fields and Scan Documents"}
+              {canGenerateProof ? "Go to Generate Proof" : "Fill All Fields and Scan Documents"}
             </button>
           </div>
         </div>

@@ -79,13 +79,15 @@ export default function Proof(rawData: RawData) {
           </div>
         </div>
 
-        <button
-          onClick={handleProve}
-          disabled={isGenerating}
-          className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors disabled:bg-gray-400"
-        >
-          {isGenerating ? "Generating Proof..." : "Generate Proof"}
-        </button>
+        {!proof && (
+          <button
+            onClick={handleProve}
+            disabled={isGenerating}
+            className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors disabled:bg-gray-400"
+          >
+            {isGenerating ? "Generating Proof..." : "Generate Proof"}
+          </button>
+        )}
 
         {isGenerating && (
           <div className="mt-6">
@@ -103,7 +105,13 @@ export default function Proof(rawData: RawData) {
         {proof && returnValue && (
           <div className="mt-6">
             <h3 className="text-lg font-medium mb-2">Generated Proof:</h3>
-            <pre className="p-4 bg-gray-100 rounded-lg overflow-auto">{JSON.stringify(proof, null, 2)}</pre>
+            <div className="relative">
+              <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-white to-transparent pointer-events-none"></div>
+              <div className="max-h-48 overflow-y-auto p-4 bg-gray-100 rounded-lg">
+                <pre className="text-sm text-gray-600">{JSON.stringify(proof, null, 2)}</pre>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+            </div>
             <Verification proof={proof} returnValue={returnValue} />
           </div>
         )}

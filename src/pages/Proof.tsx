@@ -1,7 +1,7 @@
 "use client";
 
-import { UltraHonkBackend } from "@aztec/bb.js";
-import { CompiledCircuit, Noir } from "@noir-lang/noir_js";
+import { ProofData, UltraHonkBackend } from "@aztec/bb.js";
+import { CompiledCircuit, InputMap, Noir } from "@noir-lang/noir_js";
 import { useState } from "react";
 
 import Verification from "./Verification";
@@ -14,13 +14,6 @@ type RawData = {
   rawDataTaxes: string;
 };
 
-export type UserInfo = {
-  firstName: string;
-  lastName: string;
-  taxYear: string;
-  expectedRevenue: string;
-};
-
 export async function prove(rawData: RawData) {
   const noir = new Noir(circuit as CompiledCircuit);
   const backend = new UltraHonkBackend(circuit.bytecode, { threads: navigator.hardwareConcurrency });
@@ -28,24 +21,19 @@ export async function prove(rawData: RawData) {
   const combinedData = await buildCircuitData(rawData.rawDataId, rawData.rawDataTaxes);
   console.log("combinedData", combinedData);
 
-  const { witness } = await noir.execute(combinedData as any);
+  const { witness, returnValue } = await noir.execute(combinedData as InputMap);
+  console.log("returnValue", returnValue);
+
   console.time("Proof Generation");
   const proof = await backend.generateProof(witness);
   console.timeEnd("Proof Generation");
   console.log("proof", proof);
-  return proof;
+  return { proof, returnValue };
 }
 
-// function sleep(ms: number) {
-//   return new Promise((resolve) => setTimeout(resolve, ms));
-// }
-// export async function prove(_rawData: RawData) {
-//   await sleep(10000);
-//   return "proof";
-// }
-
 export default function Proof(rawData: RawData) {
-  const [proof, setProof] = useState<string | null>(null);
+  const [proof, setProof] = useState<ProofData | null>(null);
+  const [returnValue, setReturnValue] = useState<InputMap | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
 
@@ -56,13 +44,14 @@ export default function Proof(rawData: RawData) {
     // Simulate progress updates, "freezes" at 95%
     const progressInterval = setInterval(() => {
       setProgress((prev) => Math.min(prev + 1, 95));
-    }, 500);
+    }, 300);
 
     try {
       const result = await prove(rawData);
       clearInterval(progressInterval);
       setProgress(100);
-      setProof(result);
+      setProof(result.proof);
+      setReturnValue(result.returnValue as InputMap);
     } catch (error) {
       console.error("Error generating proof:", error);
       clearInterval(progressInterval);
@@ -111,11 +100,11 @@ export default function Proof(rawData: RawData) {
           </div>
         )}
 
-        {proof && (
+        {proof && returnValue && (
           <div className="mt-6">
             <h3 className="text-lg font-medium mb-2">Generated Proof:</h3>
             <pre className="p-4 bg-gray-100 rounded-lg overflow-auto">{JSON.stringify(proof, null, 2)}</pre>
-            <Verification proof={proof} />
+            <Verification proof={proof} returnValue={returnValue} />
           </div>
         )}
       </div>

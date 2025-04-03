@@ -225,7 +225,7 @@ export class TwoDDocParser {
     return [messageData, signatureData, annexData];
   }
 
-  parseMessageZone(data: string, header: Header) {
+  parseMessageZone(data: string) {
     const fields = [];
     const seenFieldIds = new Set();
     let position = 0;

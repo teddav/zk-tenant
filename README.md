@@ -1,6 +1,5 @@
 # zkTenant
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Noir](https://img.shields.io/badge/Built%20With-Noir-blue)](https://noir-lang.org/)
 
 **zkTenant** is an app designed to verify **[2D-Doc](https://ants.gouv.fr/nos-missions/les-solutions-numeriques/2d-doc) documents** to create a housing application without sharing more information than necessary.

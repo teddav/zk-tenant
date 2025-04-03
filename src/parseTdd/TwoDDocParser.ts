@@ -79,7 +79,7 @@ export class TwoDDocParser {
       const [messageData, signatureData, annexData] = this.splitZones(remainingData, header.version);
 
       // Parse message zone according to version and encoding
-      const message = this.parseMessageZone(messageData, header);
+      const message = this.parseMessageZone(messageData);
 
       // Parse fields from message
       const parsedFields = this.parseFields(message, header);
@@ -90,7 +90,7 @@ export class TwoDDocParser {
         fields: parsedFields || [], // Ensure we always return an object
         signature: signatureData,
         signatureValid: false, // Will be updated after verification
-        annex: annexData ? this.parseMessageZone(annexData, header) : undefined,
+        annex: annexData ? this.parseMessageZone(annexData) : undefined,
         messageData: messageData,
       };
 
@@ -373,7 +373,7 @@ export class TwoDDocParser {
       // Store the field ID before getting field info and formatting
       this.lastFieldId = field.fieldId;
 
-      const fieldInfo = this.getFieldInfo(field.fieldId, header);
+      const fieldInfo = this.getFieldInfo(field.fieldId);
       if (fieldInfo) {
         const formattedValue = this.formatFieldValue(field.value, fieldInfo.type, header);
 

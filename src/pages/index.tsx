@@ -62,6 +62,7 @@ export default function Home() {
             </ul>
           </div>
           <div className="border-t border-gray-200 my-4"></div>
+
           <p className="text-gray-600">
             The app is based on{" "}
             <a
@@ -91,6 +92,18 @@ export default function Home() {
               here
             </a>
             .
+          </p>
+          <div className="border-t border-gray-200 my-4"></div>
+          <p className="text-gray-600">
+            If you have any question, you can message me on Twitter:{" "}
+            <a
+              href="https://x.com/0xteddav"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              @0xteddav
+            </a>
           </p>
         </div>
       </div>

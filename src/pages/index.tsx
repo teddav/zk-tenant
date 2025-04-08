@@ -1,6 +1,7 @@
 import Proof from "./Proof";
 import Camera from "./Camera";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 
 export default function Home() {
   const [rawDataId, setRawDataId] = useState<string>("");
@@ -35,6 +36,64 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 pb-20 gap-8 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <div className="flex items-center gap-4 mb-8">
+        <div className="w-12 h-12 flex items-center justify-center">
+          <Image src="/logo.png" alt="zkTenant Logo" width={48} height={48} className="object-contain" />
+        </div>
+        <h1 className="text-3xl font-bold">zkTenant</h1>
+      </div>
+      <div className="max-w-2xl mb-8 p-6 bg-gray-50 border border-gray-200 rounded-lg shadow-sm">
+        <p className="text-gray-600 mb-4">
+          zkTenant is a privacy-preserving document verification system that allows you to prove your identity and income without revealing
+          sensitive information.
+        </p>
+        <p className="text-gray-600 mb-4">
+          Simply scan your ID and tax documents to generate a zero-knowledge proof that verifies your eligibility while keeping your
+          personal data private.
+        </p>
+        <div className="space-y-4">
+          <div className="text-gray-600">
+            <h3 className="font-semibold mb-2">How it works:</h3>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Scan your ID and tax documents</li>
+              <li>Generate a zero-knowledge proof</li>
+              <li>Submit the proof to the landlord (this is simulated here for this demo)</li>
+              <li>The landlord can verify the proof without seeing your personal data</li>
+            </ul>
+          </div>
+          <div className="border-t border-gray-200 my-4"></div>
+          <p className="text-gray-600">
+            The app is based on{" "}
+            <a
+              href="https://noir-lang.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              Noir
+            </a>
+            . You can view the source code for the zero-knowledge circuit at{" "}
+            <a
+              href="https://github.com/teddav/tdd.nr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              tdd.nr
+            </a>{" "}
+            and the source code for this app{" "}
+            <a
+              href="https://github.com/teddav/zk-tenant"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              here
+            </a>
+            .
+          </p>
+        </div>
+      </div>
       <h1 className="text-2xl font-bold mb-8">Document Scanner</h1>
 
       {isScanning ? (
